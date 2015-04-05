@@ -1,0 +1,52 @@
+{
+  "name": "pcp",
+  "version": "0.0.0",
+  "description": "A PeerCast protocol client module for Node.js",
+  "main": "lib/index.js",
+  "scripts": {
+    "pretest": "node_modules/.bin/gulp build",
+    "test": "node_modules/.bin/gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/progre/node-peercast.git"
+  },
+  "keywords": [
+    "PeerCast",
+    "P2P",
+    "livestreaming"
+  ],
+  "author": "progre",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/progre/node-peercast/issues"
+  },
+  "homepage": "https://github.com/progre/node-peercast",
+  "files": [
+    "lib/",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
+  "dependencies": {
+    "es6-shim": "^0.27.1",
+    "log4js": "^0.6.22"
+  },
+  "devDependencies": {
+    "chalk": "^1.0.0",
+    "del": "^1.1.1",
+    "gulp": "^3.8.11",
+    "gulp-mocha": "^2.0.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-plumber": "^1.0.0",
+    "gulp-sourcemaps": "^1.5.0",
+    "gulp-tslint": "^1.4.4",
+    "gulp-typescript": "^2.4.2",
+    "merge2": "^0.3.1",
+    "power-assert": "^0.10.2",
+    "require-dir": "^0.1.0",
+    "run-sequence": "^1.0.2",
+    "source-map-support": "^0.2.10",
+    "typescript-require": "^0.2.8"
+  }
+}
