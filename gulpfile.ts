@@ -6,7 +6,11 @@ import gulp = require('gulp');
 var plumber: IGulpPlugin = require('gulp-plumber');
 var notify: any = require('gulp-notify');
 import mocha = require('gulp-mocha');
-require('require-dir')('./gulp');
+
+require('./gulp/ts')(gulp, {
+    srcPath: ['src/**/*.ts'],
+    dstPath: 'lib/'
+});
 
 gulp.task('default', callback => {
     runSequence('build', 'test', 'watch', callback);
@@ -27,7 +31,7 @@ gulp.task('build-release', ['clean'], callback => {
     runSequence('ts-release', callback);
 });
 gulp.task('test',() => {
-    return gulp.src('test/spec/**/*.coffee', { read: false })
+    return gulp.src('typings/pcp/pcp-tests.ts', { read: false })
         .pipe(plumber(
         {
             errorHandler: notify.onError({
@@ -35,10 +39,6 @@ gulp.task('test',() => {
                 message: '<%= error.message %>'
             })
         }))
-        .pipe(mocha({ reporter: 'nyan' }));
-});
-gulp.task('feature', () => {
-    return gulp.src('test/feature/**/*.coffee', { read: false })
         .pipe(mocha({ reporter: 'nyan' }));
 });
 gulp.task('watch', callback => {
