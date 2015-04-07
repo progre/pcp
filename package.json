@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/progre/node-peercast.git"
+    "url": "https://github.com/progre/pcp.git"
   },
   "keywords": [
     "PeerCast",
@@ -19,9 +19,9 @@
   "author": "progre",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/progre/node-peercast/issues"
+    "url": "https://github.com/progre/pcp/issues"
   },
-  "homepage": "https://github.com/progre/node-peercast",
+  "homepage": "https://github.com/progre/pcp",
   "files": [
     "lib/",
     "LICENSE",
