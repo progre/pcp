@@ -8,7 +8,7 @@ import pcpAtom = require('./pcpatom');
 const AGENT_NAME = 'node-peercast';
 var logger = log4js.getLogger();
 
-class PcpSocket extends events.EventEmitter {
+class PCPSocket extends events.EventEmitter {
     private reader = new AtomReader();
 
     constructor(private socket: net.Socket) {
@@ -35,12 +35,6 @@ class PcpSocket extends events.EventEmitter {
             }
         });
         logger.info('Connected: ' + localRemote);
-    }
-
-    sendPCPHeader() {
-        this.socket.write('pcp\n');
-        writeInt32LE(this.socket, 4);
-        writeInt32LE(this.socket, 1);
     }
 
     hello(agentName: string, port: number) {
@@ -113,4 +107,4 @@ function createSessionId() {
     return sessionId;
 }
 
-export = PcpSocket;
+export = PCPSocket;

@@ -43,6 +43,7 @@
     "gulp-tslint": "^1.4.4",
     "gulp-typescript": "^2.4.2",
     "merge2": "^0.3.1",
+    "pcp": "file:.",
     "power-assert": "^0.10.2",
     "require-dir": "^0.1.0",
     "run-sequence": "^1.0.2",
