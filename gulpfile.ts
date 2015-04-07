@@ -1,10 +1,9 @@
 ﻿/// <reference path="typings.d.ts" />
+import childProcess = require('child_process');
 import chalk = require('chalk');
 import del = require('del');
 import runSequence = require('run-sequence');
 import gulp = require('gulp');
-var plumber: IGulpPlugin = require('gulp-plumber');
-var notify: any = require('gulp-notify');
 import mocha = require('gulp-mocha');
 
 require('./gulp/ts')(gulp, {
@@ -30,16 +29,16 @@ gulp.task('build', callback => {
 gulp.task('build-release', ['clean'], callback => {
     runSequence('ts-release', callback);
 });
-gulp.task('test',() => {
-    return gulp.src('typings/pcp/pcp-tests.ts', { read: false })
-        .pipe(plumber(
-        {
-            errorHandler: notify.onError({
-                sound: true,
-                message: '<%= error.message %>'
-            })
-        }))
-        .pipe(mocha({ reporter: 'nyan' }));
+gulp.task('test', callback => {
+    childProcess.exec('npm rm pcp',(err, stdout, stderr) => {
+        childProcess.exec('npm i ./',(err, stdout, stderr) => {
+            del('tmp/',() => {
+                gulp.src('typings/pcp/pcp-tests.ts', { read: false })
+                    .pipe(mocha({ reporter: 'nyan' }))
+                    .on('end', callback);
+            });
+        });
+    });
 });
 gulp.task('watch', callback => {
     runSequence(['global-watch', 'ts-watch'], callback);

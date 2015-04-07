@@ -3,41 +3,35 @@ import http = require('http');
 import net = require('net');
 import stream = require('stream');
 import log4js = require('log4js');
-import PcpSocket = require('./pcpsocket');
+import PCPSocket = require('./pcpsocket');
+import pcp = require('pcp');
 
 var logger = log4js.getLogger();
 
 export function createServer() {
-    return <Server>new ServerImpl();
+    return <pcp.Server>new Server();
 }
 
-export interface Server extends ServerImpl {
-    on(event: 'connection', listener: (socket: PcpSocket) => void): events.EventEmitter;
-    on(event: 'request', listener: (req: http.IncomingMessage, res: http.ServerResponse, socket: PcpSocket) => void): events.EventEmitter;
-    on(event: 'listening', listener: () => void): events.EventEmitter;
-    on(event: string, listener: Function): events.EventEmitter;
-}
-
-export class ServerImpl extends events.EventEmitter {
+class Server extends events.EventEmitter {
     private httpServer = http.createServer();
 
     constructor() {
         super();
-
         this.httpServer.on('connection',(socket: net.Socket) => {
             logger.debug('connected: ' + socket.remoteAddress + ':' + socket.remotePort);
-            // http.Serverのsocketはreadableイベントを発行しないのでなんとかした
             readablesify(socket);
             socket.on('readable',() => {
-                if (!isPcpHeader(<Buffer>socket.read(12))) {
+                logger.debug('readable');
+                if (!isPCPHeader(<Buffer>socket.read(12))) {
                     return;
                 }
                 socket.removeListener('readable', arguments.callee);
-                super.emit('connection', new PcpSocket(socket));
+                super.emit('connection', new PCPSocket(socket));
             });
         });
         this.httpServer.on('request',(req: http.IncomingMessage, res: http.ServerResponse) => {
-            super.emit('request', req, res, new PcpSocket(req.socket));
+            logger.debug('request');
+            super.emit('request', req, res, new PCPSocket(req.socket));
         });
 
         this.httpServer.on('listening',() => {
@@ -52,35 +46,44 @@ export class ServerImpl extends events.EventEmitter {
             this.httpServer.listen(port, hostname, backlog, resolve);
         });
     }
+
+    close() {
+        this.httpServer.close();
+    }
 }
 
-export function connect(port: number, host?: string) {
+export function connectPCP(port: number, host?: string) {
     logger.info('connecting... ' + host + ':' + port);
-    return new Promise<PcpSocket>((resolve, reject) => {
+    return new Promise<PCPSocket>((resolve, reject) => {
         var socket = net.connect(port, host,() => {
-            resolve(new PcpSocket(socket));
+            resolve(new PCPSocket(socket));
         });
     });
 }
 
-export function request(options: any) {
-    return new Promise<{ statusCode: number; socket: PcpSocket; }>((resolve, reject) => {
+export function requestHTTP(options: any) {
+    return new Promise<{ statusCode: number; socket: PCPSocket; }>((resolve, reject) => {
         if (options.headers == null) {
             options.headers = {};
         }
         options.headers['x-peercast-pcp'] = 1;
         //options.headers['x-peercast-pos'] = 0;
         //options.headers['x-peercast-port'] = 7145;
-        http.get(options, res => {
-            resolve({
-                statusCode: res.statusCode,
-                socket: new PcpSocket(res.socket)
-            });
-        });
+        try {
+            http.request(options, res => {
+                logger.debug('res');
+                resolve({
+                    statusCode: res.statusCode,
+                    socket: new PCPSocket(res.socket)
+                });
+            }).end();
+        } catch (e) {
+            console.error(e.stack);
+        }
     });
 }
 
-function isPcpHeader(buffer: Buffer) {
+function isPCPHeader(buffer: Buffer) {
     if (buffer == null) {
         return false;
     }

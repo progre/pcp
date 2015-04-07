@@ -8,5 +8,6 @@
 /// <reference path="typings/gulp-typescript/gulp-typescript.d.ts" />
 /// <reference path="typings/log4js/log4js.d.ts" />
 /// <reference path="typings/mocha/mocha.d.ts" />
+/// <reference path="typings/pcp/pcp.d.ts" />
 /// <reference path="typings/power-assert/power-assert.d.ts" />
 /// <reference path="typings/run-sequence/run-sequence.d.ts" />
