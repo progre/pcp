@@ -1,5 +1,9 @@
 {
   "extends": [
-    // "@progre/tslint-config"
-  ]
+    "@progre/tslint-config"
+  ],
+  "rules": {
+    "no-bitwise": false,
+    "no-octal-literal": false
+  }
 }

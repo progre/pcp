@@ -55,26 +55,26 @@ export function createServer() {
 export async function connectPCP(port: number, host?: string) {
   logger.info(`connecting... ${host}:${port}`);
   return new Promise<PCPSocket>((resolve, reject) => {
-    var socket = net.connect(port, host, () => {
+    const socket = net.connect(port, host, () => {
       resolve(new PCPSocket(socket));
     });
   });
 }
 
-export function requestHTTP(options: any) {
-  return new Promise<{ statusCode: number; socket: PCPSocket; }>((resolve, reject) => {
+export async function requestHTTP(options: any) {
+  return new Promise<{ statusCode: number; socket: PCPSocket }>((resolve, reject) => {
     if (options.headers == null) {
       options.headers = {};
     }
     options.headers['x-peercast-pcp'] = 1;
-    //options.headers['x-peercast-pos'] = 0;
-    //options.headers['x-peercast-port'] = 7145;
+    // options.headers['x-peercast-pos'] = 0;
+    // options.headers['x-peercast-port'] = 7145;
     try {
-      http.request(options, res => {
+      http.request(options, (res) => {
         logger.debug('res');
         resolve({
           statusCode: res.statusCode!,
-          socket: new PCPSocket(res.socket)
+          socket: new PCPSocket(res.socket),
         });
       }).end();
     } catch (e) {
@@ -97,7 +97,7 @@ function isPCPHeader(buffer: Buffer) {
 }
 
 function readablesify(socket: net.Socket) {
-  var cache = new stream.PassThrough();
+  const cache = new stream.PassThrough();
   socket.on('data', (data: Buffer) => {
     cache.write(data);
     socket.emit('readable');

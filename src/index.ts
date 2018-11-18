@@ -15,5 +15,4 @@ if (!('describe' in global)) {
   }
 }
 
-import pcp = require('./pcp');
-export = pcp;
+export * from './pcp';
