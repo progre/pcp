@@ -4,9 +4,9 @@ import Atom = require('./atom');
 var logger = log4js.getLogger();
 
 class AtomReader {
-    private name: string;
-    private length: number;
-    private containerReader: AtomContainerReader;
+    private name: string | null = null;
+    private length!: number;
+    private containerReader: AtomContainerReader | null = null;
 
     read(stream: NodeJS.ReadableStream) {
         if (this.name == null) {
@@ -31,7 +31,7 @@ class AtomReader {
             this.clear();
             return container;
         } else {
-            var contentBuffer: Buffer;
+            var contentBuffer: Buffer | null;
             if (this.length === 0) {
                 contentBuffer = null;
             } else {
@@ -41,7 +41,7 @@ class AtomReader {
                     return null;
                 }
             }
-            var content = Atom.createContent(this.name, contentBuffer);
+            var content = Atom.createContent(this.name, contentBuffer!);
             this.clear();
             return content;
         }
@@ -55,7 +55,7 @@ class AtomReader {
 }
 
 class AtomContainerReader {
-    private reader: AtomReader;
+    private reader!: AtomReader;
     private children: Atom[] = [];
 
     constructor(private length: number) {

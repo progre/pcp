@@ -14,15 +14,15 @@ class PCPSocket extends events.EventEmitter {
     constructor(private socket: net.Socket) {
         super();
         var localRemote = this.localRemote;
-        socket.on('close',() => {
+        socket.on('close', () => {
             logger.info('Closed: ' + localRemote);
-            this.socket = null;
+            this.socket = <any>null;
             this.emit('close');
         });
-        socket.on('end',() => {
+        socket.on('end', () => {
             logger.info('EOS: ' + localRemote + ', ' + this.socket.read());
         });
-        socket.on('readable',() => {
+        socket.on('readable', () => {
             logger.info('Incoming message: ' + localRemote);
             for (; ;) {
                 var atom = this.reader.read(socket);
@@ -45,7 +45,7 @@ class PCPSocket extends events.EventEmitter {
             createSessionId(),
             port,
             port,
-            1218, // TODO: ‰½‚Å‚±‚Ìƒo[ƒWƒ‡ƒ“H
+            1218, // TODO: ï¿½ï¿½ï¿½Å‚ï¿½ï¿½Ìƒoï¿½[ï¿½Wï¿½ï¿½ï¿½ï¿½ï¿½H
             new Buffer(16)));
     }
 

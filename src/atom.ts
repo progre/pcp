@@ -15,8 +15,8 @@ class Atom {
 
     constructor(
         private _name: string,
-        private _content: Buffer,
-        private _children: Atom[]) {
+        private _content: Buffer | null,
+        private _children: Atom[] | null) {
     }
 
     get name() {
@@ -46,7 +46,7 @@ class Atom {
     }
 
     push(atom: Atom) {
-        this._children.push(atom);
+        this._children!.push(atom);
     }
 
     pushContent(name: string, content: Buffer) {
