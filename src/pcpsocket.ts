@@ -1,9 +1,9 @@
 import events from 'events';
 import log4js from 'log4js';
 import net from 'net';
-import Atom from './domains/Atom';
 import AtomReader from './domains/AtomReader';
-import * as pcpAtom from './domains/pcpatom';
+import { write } from './domains/atomwriter';
+import * as pcpAtom from './domains/atomfactory';
 
 const AGENT_NAME = 'node-peercast';
 const logger = log4js.getLogger();
@@ -31,15 +31,15 @@ export default class PCPSocket extends events.EventEmitter {
           return;
         }
         logger.info(`Atom received: ${atom.name}`);
-        super.emit(pcpAtom.toName(atom.name), atom);
+        super.emit(atom.name, atom);
       }
     });
     logger.info(`Connected: ${localRemote}`);
   }
 
-  hello(agentName: string, port: number) {
+  helo(agentName: string, port: number) {
     logger.info(`Send hello: ${this.localRemote}`);
-    write(this.socket, pcpAtom.createHello(
+    write(this.socket, pcpAtom.createHelo(
       agentName,
       '\0\0\0\0',
       createSessionId(),
@@ -49,11 +49,11 @@ export default class PCPSocket extends events.EventEmitter {
       new Buffer(16)));
   }
 
-  olleh() {
+  oleh() {
     logger.info(`Send olleh: ${this.localRemote}`);
     const sessionId = new Buffer(16);
     sessionId.fill(0);
-    write(this.socket, pcpAtom.createOlleh(
+    write(this.socket, pcpAtom.createOleh(
       AGENT_NAME,
       sessionId,
       0,
@@ -74,29 +74,6 @@ export default class PCPSocket extends events.EventEmitter {
     return `${this.socket.localAddress}:${this.socket.localPort}, `
       + `${this.socket.remoteAddress}:${this.socket.remotePort}`;
   }
-}
-
-function write(stream: NodeJS.WritableStream, atom: Atom) {
-  if (atom.name.length !== 4) {
-    throw new Error(`Invalid name: ${atom.name}`);
-  }
-  logger.debug(`Atom writing: ${atom.name}`);
-  stream.write(atom.name);
-  if (atom.isContainer()) {
-    writeInt32LE(stream, 0x80000000 | atom.children.length);
-    atom.children.forEach((child) => {
-      write(stream, child);
-    });
-  } else {
-    writeInt32LE(stream, atom.content.length);
-    stream.write(atom.content);
-  }
-}
-
-function writeInt32LE(stream: NodeJS.WritableStream, value: number) {
-  const buffer = new Buffer(4);
-  buffer.writeInt32LE(value, 0);
-  stream.write(buffer);
 }
 
 function createSessionId() {

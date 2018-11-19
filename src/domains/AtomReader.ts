@@ -15,7 +15,7 @@ export default class AtomReader {
       if (headerBuffer == null) {
         return null;
       }
-      this.name = headerBuffer.toString('ascii', 0, 4);
+      this.name = headerBuffer.toString('ascii', 0, 4).replace(/\0/g, '');
       this.length = headerBuffer.readUInt32LE(4);
     }
     logger.debug(`Atom reading: ${this.name}`);
@@ -28,7 +28,7 @@ export default class AtomReader {
         logger.debug('no children.');
         return null;
       }
-      const container = Atom.createContainer(this.name, children);
+      const container = Atom.createParent(this.name, children);
       this.clear();
       return container;
     }
