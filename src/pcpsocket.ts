@@ -1,9 +1,9 @@
 import events from 'events';
 import log4js from 'log4js';
 import net from 'net';
+import * as pcpAtom from './domains/atomfactory';
 import AtomReader from './domains/AtomReader';
 import { write } from './domains/atomwriter';
-import * as pcpAtom from './domains/atomfactory';
 
 const AGENT_NAME = 'node-peercast';
 const logger = log4js.getLogger();
@@ -46,13 +46,12 @@ export default class PCPSocket extends events.EventEmitter {
       port,
       port,
       1218, // TODO: 何でこのバージョン？
-      new Buffer(16)));
+      new ArrayBuffer(16)));
   }
 
   oleh() {
     logger.info(`Send olleh: ${this.localRemote}`);
-    const sessionId = new Buffer(16);
-    sessionId.fill(0);
+    const sessionId = new ArrayBuffer(16);
     write(this.socket, pcpAtom.createOleh(
       AGENT_NAME,
       sessionId,
@@ -77,9 +76,9 @@ export default class PCPSocket extends events.EventEmitter {
 }
 
 function createSessionId() {
-  const sessionId = new Buffer(16);
+  const sessionId = new Uint8Array(16);
   for (let i = 0; i < sessionId.length; i += 1) {
-    sessionId.writeUInt8(Math.floor(Math.random() * 256), i);
+    sessionId[i] = Math.floor(Math.random() * 256);
   }
-  return sessionId;
+  return <ArrayBuffer>sessionId.buffer;
 }

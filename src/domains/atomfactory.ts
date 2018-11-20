@@ -4,11 +4,11 @@ import * as ids from './types';
 export function createHelo(
   agent: string,
   osType: string,
-  sessionId: Buffer,
+  sessionId: ArrayBuffer,
   port: number,
   ping: number,
   version: number,
-  bcId: Buffer,
+  bcId: ArrayBuffer,
 ) {
   return Atom.createParent(
     ids.HELO,
@@ -26,7 +26,7 @@ export function createHelo(
 
 export function createOleh(
   agent: string,
-  sessionId: Buffer,
+  sessionId: ArrayBuffer,
   port: number,
   remoteIp: number,
   version: number,

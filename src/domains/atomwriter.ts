@@ -15,12 +15,12 @@ export function write(stream: NodeJS.WritableStream, atom: Atom) {
     return;
   }
   const content = atom.content!;
-  writeInt32LE(stream, content.length);
-  stream.write(content);
+  writeInt32LE(stream, content.byteLength);
+  stream.write(Buffer.from(content));
 }
 
 function writeInt32LE(stream: NodeJS.WritableStream, value: number) {
-  const buffer = new Buffer(4);
+  const buffer = Buffer.alloc(4);
   buffer.writeInt32LE(value, 0);
   stream.write(buffer);
 }

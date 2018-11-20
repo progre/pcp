@@ -32,17 +32,13 @@ export default class AtomReader {
       this.clear();
       return container;
     }
-    let contentBuffer: Buffer | null;
+    let contentBuffer: ArrayBuffer;
     if (this.length === 0) {
-      contentBuffer = null;
+      contentBuffer = new ArrayBuffer(0);
     } else {
-      contentBuffer = <Buffer>stream.read(this.length);
-      if (contentBuffer == null) {
-        logger.debug(`no data: ${this.length}`);
-        return null;
-      }
+      contentBuffer = <ArrayBuffer>(<Buffer>stream.read(this.length)).buffer;
     }
-    const content = Atom.createContent(this.name, contentBuffer!);
+    const content = Atom.createContent(this.name, contentBuffer);
     this.clear();
     return content;
   }
