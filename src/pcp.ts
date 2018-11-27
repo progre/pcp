@@ -1,23 +1,12 @@
 import http from 'http';
 import log4js from 'log4js';
-import net from 'net';
-import PCPSocket from './pcpsocket';
-import Server from './Server';
+import PCPSocket from './applications/PCPSocket';
 
-export const logger = log4js.getLogger();
+const logger = log4js.getLogger();
 
-export function createServer() {
-  return new Server();
-}
-
-export async function connectPCP(port: number, host?: string) {
-  logger.info(`connecting... ${host}:${port}`);
-  return new Promise<PCPSocket>((resolve, reject) => {
-    const socket = net.connect(port, host, () => {
-      resolve(new PCPSocket(socket));
-    });
-  });
-}
+export {
+  PCPSocket,
+};
 
 export async function requestHTTP(options: http.RequestOptions) {
   return new Promise<{ statusCode: number; socket: PCPSocket }>((resolve, reject) => {
@@ -32,7 +21,7 @@ export async function requestHTTP(options: http.RequestOptions) {
         logger.debug('res');
         resolve({
           statusCode: res.statusCode!,
-          socket: new PCPSocket(res.socket),
+          socket: new PCPSocket(res.socket, false),
         });
       }).end();
     } catch (e) {
